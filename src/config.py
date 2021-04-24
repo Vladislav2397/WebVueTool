@@ -18,3 +18,8 @@ class Paths(NamedTuple):
 class Files(NamedTuple):
     path: Path
     files: list
+
+
+class FileName(NamedTuple):
+    name: str
+    extension: str

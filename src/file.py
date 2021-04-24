@@ -1,6 +1,6 @@
 from pathlib import Path
 from caseconverter import pascalcase, kebabcase
-from src.tools import get_file_name_without_ext, create_directory
+from src.tools import get_file_name, create_directory
 
 
 class File:
@@ -8,28 +8,25 @@ class File:
 
     def __init__(
             self,
-            name: str,
-            extension: str,
-            path: Path,
+            path: str,
             content: str = ''
     ):
-        self._name = name
-        self._extension = extension
-        self._path = path
+        posix_path = Path(path)
+        self._name, self._extension = get_file_name(posix_path.name)
+        self._parent = posix_path.parent
         self._content = content
 
     def __str__(self):
         return f'File: {self.filename}'
 
+    def exists(self):
+        return self.path.exists()
+
     def is_empty(self):
         """
         :return: False if file is not empty else True
         """
-        try:
-            result = self.path.stat().st_size == 0
-        except FileNotFoundError:
-            result = True
-        return result
+        return self.path.exists()
 
     def create(self):
         """ Create directory with file and write content into file """
@@ -41,12 +38,6 @@ class File:
         if self.is_empty():
             with open(self.path, 'w', encoding='utf-8') as file:
                 file.write(content)
-
-    def _check_is_created(self):
-        try:
-            return True
-        except FileNotFoundError:
-            return False
 
     def _get_content(self) -> str:
         """ Return content for file """
@@ -65,7 +56,7 @@ class File:
     @property
     def parent(self) -> Path:
         """ :return: path to filename parent """
-        return self._path.parent
+        return self._parent
 
     @property
     def content(self) -> list:

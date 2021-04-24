@@ -3,8 +3,6 @@ import sys
 from src.project import Project
 
 
-# TODO: Create tests for every methods
-
 class Program:
     def __init__(self, args: list = None):
         self.is_run = False

@@ -2,6 +2,7 @@ import re
 from os import makedirs
 from caseconverter import kebabcase, pascalcase
 from pathlib import Path
+from src.config import FileName
 
 
 def get_parent_scss_template(component_name: str) -> str:
@@ -10,6 +11,14 @@ def get_parent_scss_template(component_name: str) -> str:
 
 def get_file_name_without_ext(file: str):
     return re.sub(r'\.\w*$', '', file)
+
+
+def get_file_name(filename: str) -> FileName:
+    res = re.match(r'(.*)\.(\w{1,4}$)', filename)
+    return FileName(
+        name=res.group(1),
+        extension=res.group(2)
+    )
 
 
 def write_file(file_path: str, content: str = '', mode: str = 'w') -> None:
