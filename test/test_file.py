@@ -47,7 +47,7 @@ class TestFile:
         assert self.file2.content == ''
         assert self.file3.content == ''
 
-    def test_file_is_empty(self):
+    def test_file_exists(self):
         assert not self.file1.exists()
         assert not self.file2.exists()
         assert not self.file3.exists()
