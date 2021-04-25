@@ -1,11 +1,9 @@
-from typing import List
 from terminaltables import AsciiTable
+from os import listdir, walk
 from src.config import (
     ROOT_PATH, SRC_PATH, SCSS_PATH, COMPONENTS_PATH,
     Paths, Path
 )
-from os import listdir, walk
-from src.file import VueFile, ScssFile, VueComponent
 from src.tools import create_directory
 
 
@@ -19,7 +17,7 @@ class Project:
 
     def __init__(self):
         self._check_project_dir()
-        self._update_components()
+        # self._update_components()
 
     @property
     def root_dirs(self):
@@ -36,7 +34,7 @@ class Project:
     @property
     def component_dirs(self):
         # TODO: optimize get list directories
-        return [directory.name for directory in self._PATH.components.iterdir()]
+        return listdir(self._PATH.components)
 
     @property
     def list_components(self):
@@ -55,22 +53,22 @@ class Project:
         if list_check:
             raise Exception("It's not a project")
 
-    def _update_components(self) -> None:
-        """
-        Update components
-
-        :return: None
-        """
-        component_files: List[VueFile] = [
-            VueFile(Path(path) / file)
-            for path, _, files in walk(self._PATH.components)
-            for file in files
-        ]
-
-        self._vue_components: List[VueComponent] = [
-            VueComponent(file)
-            for file in component_files
-        ]
+    # def _update_components(self) -> None:
+    #     """
+    #     Update components
+    #
+    #     :return: None
+    #     """
+        # component_files: List[File] = [
+        #     File(Path(path) / file, case_convert_fn=pascalcase)
+        #     for path, _, files in walk(self._PATH.components)
+        #     for file in files
+        # ]
+        #
+        # self._vue_components: list = [
+        #     file(file)
+        #     for file in component_files
+        # ]
 
     def _create_vue(self, vue_file_path: Path) -> None:
         """

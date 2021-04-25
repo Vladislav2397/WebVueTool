@@ -1,9 +1,9 @@
-import sys
+# import sys
 
 from src.project import Project
 
 
-class Program:
+class Main:
     def __init__(self, args: list = None):
         self.is_run = False
         self.project = Project()
@@ -38,9 +38,6 @@ class Program:
             return
         self.project.create_component(parent, name)
 
-    def _update(self):
-        print('update command')
-
     def _print_directories(self):
         self.project.print_tree()
 
@@ -52,4 +49,5 @@ class Program:
 
 
 if __name__ == '__main__':
-    Program(sys.argv)
+    Main()._print_directories()
+    Main()._print_table()

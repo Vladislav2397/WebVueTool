@@ -2,10 +2,10 @@ import re
 from os import makedirs
 from caseconverter import kebabcase, pascalcase
 from pathlib import Path
-from src.config import FileName
+from src.config import FileData
 
 
-def get_parent_scss_template(component_name: str) -> str:
+def get_template_parent_scss(component_name: str) -> str:
     return f"@import \'{component_name}\';\n"
 
 
@@ -13,12 +13,34 @@ def get_file_name_without_ext(file: str):
     return re.sub(r'\.\w*$', '', file)
 
 
-def get_file_name(filename: str) -> FileName:
-    res = re.match(r'(.*)\.(\w{1,4}$)', filename)
-    return FileName(
-        name=res.group(1),
-        extension=res.group(2)
+def get_file_data(filename: str, name_handler=None) -> FileData:
+    res = re.match(
+        r'(\w+([-.]\w+)*)(--(critical|main))?\.(scss|vue)$',
+        filename
     )
+    if name_handler:
+        return FileData(
+            name=name_handler(res.group(1), delimiters='-.'),
+            suffix=res.group(3),
+            extension=res.group(5)
+        )
+    else:
+        return FileData(
+            name=res.group(1),
+            suffix=res.group(3),
+            extension=res.group(5)
+        )
+    # raise SyntaxError('Files on current regex not found')
+
+
+def get_files(path: Path):
+    files = []
+    for item in path.iterdir():
+        if item.is_file():
+            files.append(item)
+        elif item.is_dir():
+            files.extend(get_files(path / item))
+        return files
 
 
 def write_file(file_path: str, content: str = '', mode: str = 'w') -> None:

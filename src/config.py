@@ -20,6 +20,7 @@ class Files(NamedTuple):
     files: list
 
 
-class FileName(NamedTuple):
+class FileData(NamedTuple):
     name: str
+    suffix: str
     extension: str

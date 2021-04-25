@@ -1,5 +1,6 @@
 from src.file import File
 from pathlib import Path
+from caseconverter import pascalcase, kebabcase
 
 
 class TestFile:
@@ -8,46 +9,113 @@ class TestFile:
         return '"TestFile" test for file.py'
 
     def setup(self):
-        self.file1 = File(Path.cwd() / 'sections' / 'test.vue')
-        self.file2 = File(Path.cwd() / 'sections' / 'test-test.vue')
-        self.file3 = File(Path.cwd() / 'sections' / 'test.test.vue')
+        self.vue_inputs = (
+            'test.vue',
+            'test-test.vue',
+            'test.test.vue',
+            'test.test-test.vue'
+        )
+        self.vue_files = [
+            File(Path.cwd() / 'sections' / name, case_convert_fn=pascalcase)
+            for name in self.vue_inputs
+        ]
+        self.vue_outputs = [
+            ('Test', '', 'vue'),
+            ('TestTest', '', 'vue'),
+            ('TestTest', '', 'vue'),
+            ('TestTestTest', '', 'vue')
+        ]
+
+        self.zip_vue_files_result = zip(self.vue_files, self.vue_outputs)
+
+        self.scss_inputs = (
+            'test.scss',
+            'test-test.scss',
+            'test--critical.scss',
+            'test--main.scss',
+            'test-test--main.scss',
+            'test.test--main.scss'
+        )
+
+        self.scss_files = [
+            File(Path.cwd() / 'sections' / name, case_convert_fn=kebabcase)
+            for name in self.scss_inputs
+        ]
+
+        self.scss_outputs = [
+            ('test', '', 'scss'),
+            ('test-test', '', 'scss'),
+            ('test', '--critical', 'scss'),
+            ('test', '--main', 'scss'),
+            ('test-test', '--main', 'scss'),
+            ('test-test', '--main', 'scss')
+        ]
+
+        self.zip_scss_files_result = zip(self.scss_files, self.scss_outputs)
 
     def test_magic_str(self):
-        assert self.file1.__str__() == 'File: test.vue'
-        assert self.file2.__str__() == 'File: test-test.vue'
-        assert self.file3.__str__() == 'File: test.test.vue'
+        for file, result in self.zip_vue_files_result:
+            assert file.__str__() == f'File: {result[0]}{result[1]}.{result[2]}'
+
+        for file, result in self.zip_scss_files_result:
+            assert file.__str__() == f'File: {result[0]}{result[1]}.{result[2]}'
 
     def test_file_property_name(self):
-        assert self.file1.name == 'test'
-        assert self.file2.name == 'test-test'
-        assert self.file3.name == 'test.test'
+        for file, result in self.zip_vue_files_result:
+            assert file.name == result[0]
+
+        for file, result in self.zip_scss_files_result:
+            assert file.name == result[0]
+
+    def test_file_property_suffix(self):
+        for file, result in self.zip_vue_files_result:
+            assert not file.suffix
+
+        for file, result in self.zip_scss_files_result:
+            assert file.suffix == (result[1] if result[1] else None)
 
     def test_file_property_extension(self):
-        assert self.file1.extension == 'vue'
-        assert self.file2.extension == 'vue'
-        assert self.file3.extension == 'vue'
+        for file, result in self.zip_vue_files_result:
+            assert file.extension == 'vue'
+
+        for file, result in self.zip_scss_files_result:
+            assert file.extension == 'scss'
 
     def test_file_property_filename(self):
-        assert self.file1.filename == 'test.vue'
-        assert self.file2.filename == 'test-test.vue'
-        assert self.file3.filename == 'test.test.vue'
+        for file, result in self.zip_vue_files_result:
+            assert file.filename == f'{result[0]}.{result[2]}'
+
+        for file, result in self.zip_scss_files_result:
+            assert file.filename == f'{result[0]}{result[1]}.{result[2]}'
 
     def test_file_property_parent(self):
-        assert self.file1.parent == Path(Path.cwd()) / 'sections'
-        assert self.file2.parent == Path(Path.cwd()) / 'sections'
-        assert self.file3.parent == Path(Path.cwd()) / 'sections'
+        for file, result in self.zip_vue_files_result:
+            assert file.parent == Path.cwd() / 'sections'
+
+        for file, result in self.zip_scss_files_result:
+            assert file.parent == Path(Path.cwd()) / 'sections'
 
     def test_file_property_path(self):
-        assert self.file1.path == Path.cwd() / 'sections' / 'test.vue'
-        assert self.file2.path == Path.cwd() / 'sections' / 'test-test.vue'
-        assert self.file3.path == Path.cwd() / 'sections' / 'test.test.vue'
+        for file, result in self.zip_vue_files_result:
+            assert file.path == Path.cwd() / 'sections' / f'{result[0]}.{result[2]}'
+
+        for file, result in self.zip_scss_files_result:
+            assert file.path == Path.cwd() / 'sections' / f'{result[0]}{result[1]}.{result[2]}'
 
     def test_file_property_content(self):
-        assert self.file1.content == ''
-        assert self.file2.content == ''
-        assert self.file3.content == ''
+        for file, result in self.zip_vue_files_result:
+            assert file.content == ''
+
+        for file, result in self.zip_scss_files_result:
+            assert file.content == ''
+
+    def test_file_property_relative(self):
+        for file, result in self.zip_vue_files_result:
+            assert file.relative_path == Path('sections') / f'{result[0]}{result[1]}.{result[2]}'
 
     def test_file_exists(self):
-        assert not self.file1.exists()
-        assert not self.file2.exists()
-        assert not self.file3.exists()
+        for file, result in self.zip_vue_files_result:
+            assert not file.exists()
+
+        for file, result in self.zip_scss_files_result:
+            assert not file.exists()

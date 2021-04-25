@@ -1,6 +1,7 @@
 from pathlib import Path
-from caseconverter import pascalcase, kebabcase
-from src.tools import get_file_name, create_directory
+from src.tools import get_file_data
+
+# FIXME: Circular imports src.file src.tools
 
 
 class File:
@@ -9,35 +10,38 @@ class File:
     def __init__(
             self,
             path: str,
-            content: str = ''
+            content: str = '',
+            case_convert_fn=None
     ):
-        posix_path = Path(path)
-        self._name, self._extension = get_file_name(posix_path.name)
-        self._parent = posix_path.parent
+        file_data = get_file_data(Path(path).name, case_convert_fn)
+        self._name = file_data.name
+        self._suffix = file_data.suffix
+        self._extension = file_data.extension
+        self._parent = Path(path).parent
         self._content = content
 
     def __str__(self):
         return f'File: {self.filename}'
 
-    def exists(self):
+    def exists(self) -> bool:
         return self.path.exists()
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         """
         :return: False if file is not empty else True
         """
-        return self.path.exists()
+        return self.path.stat().st_size == 0
 
-    def create(self):
-        """ Create directory with file and write content into file """
-        create_directory(self.path.parent)
-        self.write(self._get_content())
+    # def create(self) -> None:
+    #     """ Create directory with file and write content into file """
+        # create_directory(self.path.parent)
+        # self.write(self._get_content())
 
-    def write(self, content: str):
-        """ Write content into file """
-        if self.is_empty():
-            with open(self.path, 'w', encoding='utf-8') as file:
-                file.write(content)
+    # def write(self, content: str) -> None:
+    #     """ Write content into file """
+    #     if self.is_empty():
+    #         with open(self.path, 'w', encoding='utf-8') as file:
+    #             file.write(content)
 
     def _get_content(self) -> str:
         """ Return content for file """
@@ -49,9 +53,20 @@ class File:
         return self._name
 
     @property
+    def suffix(self):
+        """ :return: suffix of filename """
+        return self._suffix
+
+    @property
     def extension(self):
         """ :return: extension of filename """
         return self._extension
+
+    @property
+    def filename(self) -> str:
+        """ :return: filename with extension """
+        suffix = self._suffix if self.suffix else ''
+        return f'{self._name}{suffix}.{self._extension}'
 
     @property
     def parent(self) -> Path:
@@ -59,58 +74,18 @@ class File:
         return self._parent
 
     @property
-    def content(self) -> list:
-        return self._content
-
-    @property
-    def filename(self) -> str:
-        """ :return: filename with extension """
-        return f'{self._name}.{self._extension}'
-
-    @property
     def path(self) -> Path:
         """ :return: path to filename with extension """
         return self.parent / self.filename
 
+    @property
+    def content(self) -> list:
+        """ :return: content filename in list """
+        return self._content
 
-class VueFile(File):
-    def __init__(self, path: Path, content: str = ''):
-        super().__init__(
-            name=pascalcase(get_file_name_without_ext(path.name)),
-            extension='vue',
-            path=path,
-            content=content
-        )
-
-    def _get_content(self):
-        return f'''<template lang="pug">
-    +b.SECTION.{kebabcase(self.name)}
-</template>
-
-<script lang="ts">
-import {{ Component, Vue }} from 'vue-property-decorator'
-
-@Component
-
-export default {pascalcase(self.name)} extends Vue {{
-
-}}
-</script>'''
-
-
-class ScssFile(File):
-    def __init__(self, path: Path, content: str = ''):
-        super().__init__(
-            name=kebabcase(get_file_name_without_ext(path.name)),
-            extension='scss',
-            path=path.parent / kebabcase(path.name) / kebabcase(path.name),
-            content=content
-        )
-
-    def _get_content(self):
-        return f'''.{kebabcase(self.name)} {{
-    // draft {kebabcase(self.name)}
-}}'''
+    @property
+    def relative_path(self):
+        return Path(self.parent.name) / self.filename
 
 
 class Component:
@@ -125,20 +100,5 @@ class Component:
         return self.file.name
 
     @property
-    def path(self) -> Path:
+    def parent(self) -> Path:
         return self.file.parent
-
-
-class VueComponent(Component):
-    pass
-
-
-class ScssComponent(Component):
-    def __init__(self, file_component: File, is_parent: bool = False, children: list = None):
-        super().__init__(file_component)
-        self._is_parent = is_parent
-        self._children = children or list()
-
-    @property
-    def children(self):
-        return self._children
