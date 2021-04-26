@@ -10,13 +10,13 @@ class TestFile:
 
     def setup(self):
         self.vue_inputs = (
-            'test.vue',
-            'test-test.vue',
-            'test.test.vue',
-            'test.test-test.vue'
+            'Test.vue',
+            'TestTest.vue',
+            'TestTest.vue',
+            'TestTestTest.vue'
         )
         self.vue_files = [
-            File(Path.cwd() / 'sections' / name, case_convert_fn=pascalcase)
+            File(Path.cwd() / 'sections' / name)
             for name in self.vue_inputs
         ]
         self.vue_outputs = [
@@ -33,12 +33,11 @@ class TestFile:
             'test-test.scss',
             'test--critical.scss',
             'test--main.scss',
-            'test-test--main.scss',
-            'test.test--main.scss'
+            'test-test--main.scss'
         )
 
         self.scss_files = [
-            File(Path.cwd() / 'sections' / name, case_convert_fn=kebabcase)
+            File(Path.cwd() / 'sections' / name)
             for name in self.scss_inputs
         ]
 
@@ -47,7 +46,6 @@ class TestFile:
             ('test-test', '', 'scss'),
             ('test', '--critical', 'scss'),
             ('test', '--main', 'scss'),
-            ('test-test', '--main', 'scss'),
             ('test-test', '--main', 'scss')
         ]
 

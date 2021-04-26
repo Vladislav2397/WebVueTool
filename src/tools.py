@@ -30,17 +30,6 @@ def get_file_data(filename: str, name_handler=None) -> FileData:
             suffix=res.group(3),
             extension=res.group(5)
         )
-    # raise SyntaxError('Files on current regex not found')
-
-
-def get_files(path: Path):
-    files = []
-    for item in path.iterdir():
-        if item.is_file():
-            files.append(item)
-        elif item.is_dir():
-            files.extend(get_files(path / item))
-        return files
 
 
 def write_file(file_path: str, content: str = '', mode: str = 'w') -> None:

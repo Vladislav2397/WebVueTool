@@ -36,7 +36,7 @@ class Main:
             name = input('name component: ')
         if name == 'exit' or parent == 'exit':
             return
-        self.project.create_component(parent, name)
+        # self.project.create_component(parent, name)
 
     def _print_directories(self):
         self.project.print_tree()
@@ -50,4 +50,4 @@ class Main:
 
 if __name__ == '__main__':
     Main()._print_directories()
-    Main()._print_table()
+    # Main()._print_table()

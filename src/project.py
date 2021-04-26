@@ -1,10 +1,9 @@
 from terminaltables import AsciiTable
-from os import listdir, walk
+from os import listdir
 from src.config import (
     ROOT_PATH, SRC_PATH, SCSS_PATH, COMPONENTS_PATH,
     Paths, Path
 )
-from src.tools import create_directory
 
 
 class Project:
@@ -17,7 +16,7 @@ class Project:
 
     def __init__(self):
         self._check_project_dir()
-        # self._update_components()
+        self.vue_files = self._get_files(self._PATH.components)
 
     @property
     def root_dirs(self):
@@ -36,10 +35,6 @@ class Project:
         # TODO: optimize get list directories
         return listdir(self._PATH.components)
 
-    @property
-    def list_components(self):
-        return [component.name for component in self._vue_components]
-
     def _check_project_dir(self):
         """
             Check current dir
@@ -53,63 +48,14 @@ class Project:
         if list_check:
             raise Exception("It's not a project")
 
-    # def _update_components(self) -> None:
-    #     """
-    #     Update components
-    #
-    #     :return: None
-    #     """
-        # component_files: List[File] = [
-        #     File(Path(path) / file, case_convert_fn=pascalcase)
-        #     for path, _, files in walk(self._PATH.components)
-        #     for file in files
-        # ]
-        #
-        # self._vue_components: list = [
-        #     file(file)
-        #     for file in component_files
-        # ]
-
-    def _create_vue(self, vue_file_path: Path) -> None:
-        """
-            Create vue file in components dir
-
-            :param vue_file_path: path to vue component file
-            :return: None
-        """
-
-        vue_file = VueFile(vue_file_path)
-
-        if vue_file_path.parent.name not in self.component_dirs:
-            create_directory(vue_file_path.parent)
-            vue_file.create()
-        elif vue_file.name in listdir(vue_file_path.parent):
-            print(f'{vue_file} is already has')
-        else:
-            vue_file.create()
-
-    def _create_scss(self, scss_file_path: Path):
-        """
-            Create scss file in assets/scss dir
-
-            :param scss_file_path: path to scss style file without extension
-            :return: None
-        """
-        scss_file = ScssFile(scss_file_path)
-
-        try:
-            scss_file.create()
-        except Exception:
-            print(f'{scss_file} is already has')
-
-    #                           => sections            => Test
-    def create_component(self, component_parent: str, component_name: str):
-
-        vue_path = self._PATH.components / component_parent / component_name
-        scss_path = self._PATH.scss / component_parent / component_name
-
-        self._create_vue(vue_path)
-        self._create_scss(scss_path)
+    def _get_files(self, path: Path):
+        files = []
+        for item in path.iterdir():
+            if item.is_file():
+                files.append(item)
+            elif item.is_dir():
+                files.extend(self._get_files(path / item))
+        return files
 
     def print_table(self):
         table_data = [
