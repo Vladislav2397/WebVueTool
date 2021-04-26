@@ -39,8 +39,8 @@ def get_files(path: Path):
         if item.is_file():
             files.append(item)
         elif item.is_dir():
-            files.extend(get_files(path / item))
-        return files
+            files.extend([get_files(path / item)])
+    return files
 
 
 def write_file(file_path: str, content: str = '', mode: str = 'w') -> None:
