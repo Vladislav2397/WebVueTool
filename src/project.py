@@ -1,11 +1,11 @@
-# from terminaltables import AsciiTable
+from terminaltables import AsciiTable
 from os import listdir
 
 from src.config import (
     ROOT_PATH, SRC_PATH, SCSS_PATH, COMPONENTS_PATH,
     Paths, Path
 )
-from src.file import File
+# from src.file import File
 
 
 class Project:
@@ -53,7 +53,13 @@ class Project:
             raise Exception("It's not a project")
 
     def _get_files(self, path: Path):
-        pass
+        files = []
+        for item in path.iterdir():
+            if item.is_file():
+                files.append(item)
+            elif item.is_dir():
+                files.extend([self._get_files(path / item)])
+        return files
 
     def _print_files(self, path: Path):
         # TODO: Create function print tree for print from dict[str: list]
@@ -69,30 +75,20 @@ class Project:
             elif item.is_dir():
                 self._print_files(path / item)
 
-    # def print_table(self):
-    #     table_data = [
-    #         ['Components', 'styles']
-    #     ]
-    #     table_data.extend([component] for component in self.list_components)
-    #     table = AsciiTable(table_data)
-    #     print(table.table)
+    def print_table(self):
+        table_data = [
+            ['Components', 'styles']
+        ]
+        table_data.extend(component for component in self._get_files(self._PATH.components))
+        table = AsciiTable(table_data)
+        print(table.table)
 
     def print_tree(self):
         self._print_files(self._PATH.components)
-        # for item in self.vue_files:
-        #     if isinstance(item, str):
-        #         print(item)
-        #     else:
-        #         for i in item:
-        #             print(i)
-        # for directory in self.component_dirs:
-        #     print(f'|-- {directory}:')
-        #     for subdir in listdir(self._PATH.components / directory):
-        #         print(f'\t|-- {subdir}')
 
 
 if __name__ == '__main__':
     # test_type = 'sections'
     # test_component = 'cardBonus'
 
-    Project().print_tree()
+    Project().print_table()
