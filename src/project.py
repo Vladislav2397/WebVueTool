@@ -61,9 +61,9 @@ class Project:
                 files.extend([self._get_files(path / item)])
         return files
 
-    def _print_files(self, path: Path):
+    def _print_files(self, path: Path, rel_path: Path):
         # TODO: Create function print tree for print from dict[str: list]
-        parts = path.relative_to(self._PATH.components).parts
+        parts = path.relative_to(rel_path).parts
         indent = '\t' * (len(parts) - 1)
         sep = '|-- ' if len(parts) else ''
 
@@ -73,18 +73,22 @@ class Project:
                 print((indent + '\t') + sep + item.name)
                 pass
             elif item.is_dir():
-                self._print_files(path / item)
+                self._print_files(path / item, rel_path)
 
     def print_table(self):
         table_data = [
             ['Components', 'styles']
         ]
-        table_data.extend(component for component in self._get_files(self._PATH.components))
+        table_data.extend(
+            [component[0], component[1]]
+            for component in zip(self._get_files(self._PATH.components), self._get_files(self._PATH.scss))
+        )
         table = AsciiTable(table_data)
         print(table.table)
 
     def print_tree(self):
-        self._print_files(self._PATH.components)
+        self._print_files(self._PATH.components, self._PATH.components)
+        # self._print_files(self._PATH.scss, self._PATH.scss)
 
 
 if __name__ == '__main__':
