@@ -49,5 +49,5 @@ class Main:
 
 
 if __name__ == '__main__':
-    Main()._print_directories()
-    # Main()._print_table()
+    # Main()._print_directories()
+    Main()._print_table()
