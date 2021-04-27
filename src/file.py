@@ -10,6 +10,7 @@ class File:
             self,
             path: str,
             content: str = '',
+            relative_root: str = None
     ):
         self._full_path = Path(path)
         self._file_name = self._full_path.name
@@ -17,8 +18,11 @@ class File:
             self._file_name
         )
         self._content = content
+        self._relative_root = relative_root
 
     def __str__(self) -> str:
+        if self._relative_root:
+            return f'File: {self.relative_path}'
         return f'File: {self._file_name}'
 
     def __call__(self) -> Path:
@@ -54,6 +58,14 @@ class File:
     @property
     def filename(self) -> str:
         return self._file_name
+
+    @property
+    def parts(self) -> tuple:
+        return self.relative_path.parts
+
+    @property
+    def relative_path(self):
+        return self._full_path.relative_to(self._relative_root)
 
     def exists(self) -> bool:
         return self._full_path.exists()

@@ -1,9 +1,11 @@
-from terminaltables import AsciiTable
+# from terminaltables import AsciiTable
 from os import listdir
+
 from src.config import (
     ROOT_PATH, SRC_PATH, SCSS_PATH, COMPONENTS_PATH,
     Paths, Path
 )
+from src.file import File
 
 
 class Project:
@@ -16,7 +18,10 @@ class Project:
 
     def __init__(self):
         self._check_project_dir()
-        self.vue_files = self._get_files(self._PATH.components)
+        # self.vue_files = [
+        #     item
+        #     for item in self._get_files(self._PATH.components)
+        # ]
 
     @property
     def root_dirs(self):
@@ -32,7 +37,6 @@ class Project:
 
     @property
     def component_dirs(self):
-        # TODO: optimize get list directories
         return listdir(self._PATH.components)
 
     def _check_project_dir(self):
@@ -49,28 +53,42 @@ class Project:
             raise Exception("It's not a project")
 
     def _get_files(self, path: Path):
-        files = []
+        pass
+
+    def _print_files(self, path: Path):
+        # TODO: Create function print tree for print from dict[str: list]
+        parts = path.relative_to(self._PATH.components).parts
+        indent = '\t' * (len(parts) - 1)
+        sep = '|-- ' if len(parts) else ''
+
+        print(indent + sep + path.name)
         for item in path.iterdir():
             if item.is_file():
-                files.append(item)
+                print((indent + '\t') + sep + item.name)
+                pass
             elif item.is_dir():
-                files.extend(self._get_files(path / item))
-        return files
+                self._print_files(path / item)
 
-    def print_table(self):
-        table_data = [
-            ['Components', 'styles']
-        ]
-        table_data.extend([component] for component in self.list_components)
-        table = AsciiTable(table_data)
-        print(table.table)
+    # def print_table(self):
+    #     table_data = [
+    #         ['Components', 'styles']
+    #     ]
+    #     table_data.extend([component] for component in self.list_components)
+    #     table = AsciiTable(table_data)
+    #     print(table.table)
 
     def print_tree(self):
-        print('Components:')
-        for directory in self.component_dirs:
-            print(f'|-- {directory}:')
-            for subdir in listdir(self._PATH.components / directory):
-                print(f'\t|-- {subdir}')
+        self._print_files(self._PATH.components)
+        # for item in self.vue_files:
+        #     if isinstance(item, str):
+        #         print(item)
+        #     else:
+        #         for i in item:
+        #             print(i)
+        # for directory in self.component_dirs:
+        #     print(f'|-- {directory}:')
+        #     for subdir in listdir(self._PATH.components / directory):
+        #         print(f'\t|-- {subdir}')
 
 
 if __name__ == '__main__':
