@@ -1,14 +1,15 @@
 from terminaltables import AsciiTable
 from os import listdir
+# from caseconverter import kebabcase
 
 from src.config import (
     ROOT_PATH, SRC_PATH, SCSS_PATH, COMPONENTS_PATH,
     Paths, Path
 )
 from src.file import File
-# from src.component import Component
+from src.component import Component
 
-# Select components view (as dict or as object)
+# Select components view (as dict or object)
 # 'component": {
 #   'Test': {
 #       'Test.vue': None,
@@ -30,11 +31,11 @@ class Project:
 
     def __init__(self):
         self._check_project_dir()
+        self.components = []
         self.vue_files = [
             File(path, '', self._PATH.components)
             for path in self._get_files(self._PATH.components)
         ]
-        print(self.vue_files)
 
     def _check_project_dir(self):
         """
@@ -106,6 +107,23 @@ class Project:
     def print_tree(self):
         self._print_files(self._PATH.components, self._PATH.components)
         # self._print_files(self._PATH.scss, self._PATH.scss)
+
+    def get_style(self, vue_file: File):
+        for file in self._get_files(self._PATH.scss):
+            item = str(file).find('button' + '--critical.scss')
+            if item != -1:
+                return item
+        return None
+
+    def comp(self):
+        vue_file = File(self._PATH.components / 'test' / 'Test.vue')
+        scss_file = self.get_style(vue_file)
+        print(scss_file)
+        component = Component(
+            vue_file=vue_file,
+            scss_path=self._PATH.scss
+        )
+        print(component)
 
 
 if __name__ == '__main__':

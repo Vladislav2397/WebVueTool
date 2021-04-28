@@ -44,10 +44,14 @@ class Main:
     def _print_table(self):
         self.project.print_table()
 
+    def runner(self):
+        self.project.comp()
+
     def _exit(self):
         self.is_run = False
 
 
 if __name__ == '__main__':
     # Main()._print_directories()
-    Main()._print_table()
+    # Main()._print_table()
+    Main().runner()
