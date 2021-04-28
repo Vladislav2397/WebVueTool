@@ -1,4 +1,4 @@
-from terminaltables import AsciiTable
+from terminaltables import AsciiTable, SingleTable
 from os import listdir
 # from caseconverter import kebabcase
 
@@ -31,11 +31,14 @@ class Project:
 
     def __init__(self):
         self._check_project_dir()
-        self.components = []
-        self.vue_files = [
-            File(path, '', self._PATH.components)
-            for path in self._get_files(self._PATH.components)
+        self.components = [
+            Component(File(str(vue_file), '', self._PATH.components), self._PATH.scss)
+            for vue_file in self._get_files(self._PATH.components)
         ]
+        # self.vue_files = [
+        #     File(path, '', self._PATH.components)
+        #     for path in self._get_files(self._PATH.components)
+        # ]
 
     def _check_project_dir(self):
         """
@@ -97,33 +100,26 @@ class Project:
         table_data = [
             ['Parent', 'Components', 'Styles']
         ]
-        table_data.extend(
-            [component.relative_path.parent, component.name, '']
-            for component in self.vue_files
-        )
+        # table_data.extend(
+        #     [component.parent, component.name, component.is_style]
+        #     for component in self.components
+        # )
         table = AsciiTable(table_data)
+        table.table_data = [
+            ['Parent', 'Components', 'Styles']
+        ]
+        table.table_data.extend([
+            ['p', 'c', 's'],
+            ['p', 'c', 's'],
+        ])
         print(table.table)
 
     def print_tree(self):
         self._print_files(self._PATH.components, self._PATH.components)
         # self._print_files(self._PATH.scss, self._PATH.scss)
 
-    def get_style(self, vue_file: File):
-        for file in self._get_files(self._PATH.scss):
-            item = str(file).find('button' + '--critical.scss')
-            if item != -1:
-                return item
-        return None
-
-    def comp(self):
-        vue_file = File(self._PATH.components / 'test' / 'Test.vue')
-        scss_file = self.get_style(vue_file)
-        print(scss_file)
-        component = Component(
-            vue_file=vue_file,
-            scss_path=self._PATH.scss
-        )
-        print(component)
+    def run(self):
+        self.print_table()
 
 
 if __name__ == '__main__':

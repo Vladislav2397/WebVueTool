@@ -10,7 +10,7 @@ class File:
             self,
             path: str,
             content: str = '',
-            relative_root: str = None
+            relative_root: Path = None
     ):
         self._full_path = Path(path)
         self._file_name = self._full_path.name

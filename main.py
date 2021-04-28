@@ -45,7 +45,7 @@ class Main:
         self.project.print_table()
 
     def runner(self):
-        self.project.comp()
+        self.project.run()
 
     def _exit(self):
         self.is_run = False
