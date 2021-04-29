@@ -3,8 +3,7 @@
 - [ ] Create classes
   - [x] **File**
   - [ ] **Directory** ?
-  - [ ] **ListComponents**
+  - [x] **ListComponents**
 - [ ] Optimize code
 - [ ] Create view
-    - [ ] table
-    - [ ] list
+  - [x] table

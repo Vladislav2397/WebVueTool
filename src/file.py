@@ -1,5 +1,6 @@
 import re
 from pathlib import Path
+from typing import Union
 from src.config import FileData
 
 
@@ -8,7 +9,7 @@ class File:
 
     def __init__(
             self,
-            path: str,
+            path: Union[str, Path],
             content: str = '',
             relative_root: Path = None
     ):
@@ -28,7 +29,8 @@ class File:
     def __call__(self) -> Path:
         return self._full_path
 
-    def _get_file_data(self, filename: str) -> FileData:
+    @staticmethod
+    def _get_file_data(filename: str) -> FileData:
         res = re.match(
             r'^(\w+([-.]\w+)*)(--(critical|main))?\.(scss|vue)?$',
             filename

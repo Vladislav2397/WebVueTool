@@ -34,10 +34,6 @@ def write_file(file_path: str, content: str = '', mode: str = 'w') -> None:
         file.close()
 
 
-def listdir(path: Path):
-    return [directory.name for directory in path.iterdir()]
-
-
 def create_directory(path: str):
     try:
         makedirs(path)
