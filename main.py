@@ -38,9 +38,6 @@ class Main:
             return
         # self.project.create_component(parent, name)
 
-    def _print_directories(self):
-        self.project.print_tree()
-
     def _print_table(self):
         self.project.print_table()
 

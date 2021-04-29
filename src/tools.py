@@ -9,10 +9,6 @@ def get_template_parent_scss(component_name: str) -> str:
     return f"@import \'{component_name}\';\n"
 
 
-def get_file_name_without_ext(file: str):
-    return re.sub(r'\.\w*$', '', file)
-
-
 def get_file_data(filename: str, name_handler=None) -> FileData:
     res = re.match(
         r'(\w+([-.]\w+)*)(--(critical|main))?\.(scss|vue)$',

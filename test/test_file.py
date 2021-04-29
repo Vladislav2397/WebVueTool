@@ -1,6 +1,5 @@
 from src.file import File
 from pathlib import Path
-from caseconverter import pascalcase, kebabcase
 
 
 class TestFile:
@@ -92,20 +91,6 @@ class TestFile:
 
         for file, result in self.zip_scss_files_result:
             assert file.parent == Path(Path.cwd()) / 'sections'
-
-    def test_file_property_path(self):
-        for file, result in self.zip_vue_files_result:
-            assert file.path == Path.cwd() / 'sections' / f'{result[0]}.{result[2]}'
-
-        for file, result in self.zip_scss_files_result:
-            assert file.path == Path.cwd() / 'sections' / f'{result[0]}{result[1]}.{result[2]}'
-
-    def test_file_property_content(self):
-        for file, result in self.zip_vue_files_result:
-            assert file.content == ''
-
-        for file, result in self.zip_scss_files_result:
-            assert file.content == ''
 
     def test_file_property_relative(self):
         for file, result in self.zip_vue_files_result:
