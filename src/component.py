@@ -1,12 +1,17 @@
-from caseconverter import pascalcase, kebabcase
 from pathlib import Path
+
+from caseconverter import pascalcase
+
 from src.file import File
 
 
 class Component:
 
-    def __init__(self, vue_file: File):
+    def __init__(self, vue_file: File, style_files=None):
         self._vue_file = vue_file
+        self._critical_style = style_files.critical
+        self._main_style = style_files.main
+        print(self._critical_style)
 
     def __str__(self) -> str:
         return f'{self.__class__.__name__}: {self.name}'
@@ -30,9 +35,4 @@ class Component:
 
     @property
     def is_style(self) -> bool:
-        # assert self._scss_critical_file.parent == self._scss_main_file.parent
-        # assert self._scss_critical_file.name == self._scss_main_file.name
-
-        vue = self._vue_file.parent / kebabcase(self._vue_file.name)
-
-        return vue
+        return True

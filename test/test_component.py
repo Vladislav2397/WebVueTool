@@ -7,8 +7,8 @@ class TestComponent:
     def setup(self):
         self.component = Component(
             File(Path.cwd() / 'sections' / 'Test.vue', '', Path.cwd()),
-            File(Path.cwd() / 'sections' / 'test--main.scss', '', Path.cwd()),
-            File(Path.cwd() / 'sections' / 'test--critical.scss', '', Path.cwd())
+            # File(Path.cwd() / 'sections' / 'test--main.scss', '', Path.cwd()),
+            # File(Path.cwd() / 'sections' / 'test--critical.scss', '', Path.cwd())
         )
         pass
 

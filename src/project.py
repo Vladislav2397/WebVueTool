@@ -1,4 +1,4 @@
-from terminaltables import SingleTable
+from terminaltables import AsciiTable
 from os import listdir
 
 from src.config import (
@@ -31,7 +31,9 @@ class Project:
 
     def __init__(self):
         self._check_project_dir()
-        self._list_components = ListComponents(self._PATH.components)
+        self._list_components = ListComponents(
+            self._PATH.components, self._PATH.scss
+        )
 
     def _check_project_dir(self):
         """
@@ -66,7 +68,7 @@ class Project:
         table_data = [
             ['Parent', 'Component', 'IsStyle']
         ]
-        table = SingleTable(table_data)
+        table = AsciiTable(table_data)
         table.table_data.extend([
             (file.parent, file.name, True)
             for file in self._list_components.components

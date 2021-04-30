@@ -32,7 +32,7 @@ class File:
     @staticmethod
     def _get_file_data(filename: str) -> FileData:
         res = re.match(
-            r'^(\w+([-.]\w+)*)(--(critical|main))?\.(scss|vue)?$',
+            r'^(\w+([-.]\w+)*)(--(critical|main))?\.(scss|vue|css)?$',
             filename
         )
         return FileData(
