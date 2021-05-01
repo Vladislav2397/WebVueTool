@@ -9,9 +9,10 @@ class Component:
 
     def __init__(self, vue_file: File, style_files=None):
         self._vue_file = vue_file
-        self._critical_style = style_files.critical
-        self._main_style = style_files.main
-        print(self._critical_style)
+        self._critical_file = style_files.critical
+        self._main_file = style_files.main
+        print(self._critical_file)
+        print(self._main_file)
 
     def __str__(self) -> str:
         return f'{self.__class__.__name__}: {self.name}'

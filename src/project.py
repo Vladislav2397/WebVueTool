@@ -1,23 +1,18 @@
+from pathlib import Path
+from os import listdir, walk
 from terminaltables import AsciiTable
-from os import listdir
 
+from src.database.models import (
+    create_tables,
+    File as FileDB
+)
 from src.config import (
     ROOT_PATH, SRC_PATH, SCSS_PATH, COMPONENTS_PATH,
     Paths
 )
-from src.list_component import ListComponents
+from src.tools import get_file_data
+# from src.list_component import ListComponents
 # from src.component import Component
-
-# Select components view (as dict or object)
-# 'component": {
-#   'Test': {
-#       'Test.vue': None,
-#       'TestTest.vue': None
-#   },
-#   'blank': {
-#       'About.vue': None
-#   }
-# }
 
 
 class Project:
@@ -31,9 +26,20 @@ class Project:
 
     def __init__(self):
         self._check_project_dir()
-        self._list_components = ListComponents(
-            self._PATH.components, self._PATH.scss
-        )
+
+        create_tables()
+
+        for file in self._get_vue_files():
+            FileDB.get_or_create(
+                name=file.name,
+                suffix=file.suffix,
+                extension=file.extension,
+                path=file.path
+            )
+
+        # self._list_components = ListComponents(
+        #     self._PATH.components, self._PATH.scss
+        # )
 
     def _check_project_dir(self):
         """
@@ -47,6 +53,17 @@ class Project:
                 list_check.remove(item)
         if list_check:
             raise Exception("It's not a project")
+
+    def _get_vue_files(self):
+        list_files = []
+        for path, dirs, files in walk(self._PATH.components, topdown=True):
+            files[:] = [f for f in files if f.endswith('.vue')]
+            for file in files:
+                list_files.append(get_file_data(file, path))
+        return list_files
+
+    def _get_db_files(self):
+        return (file for file in FileDB.select())
 
     @property
     def root_dirs(self):
@@ -70,8 +87,11 @@ class Project:
         ]
         table = AsciiTable(table_data)
         table.table_data.extend([
-            (file.parent, file.name, True)
-            for file in self._list_components.components
+            (
+                Path(file.path).relative_to(self._PATH.components),
+                file.name,
+                True
+            ) for file in self._get_db_files()
         ])
         print(table.table)
 
@@ -89,6 +109,7 @@ class Project:
 
     def run(self):
         self.print_table()
+        # pass
 
 
 if __name__ == '__main__':

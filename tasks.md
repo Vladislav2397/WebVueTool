@@ -7,6 +7,10 @@
 - [ ] Optimize code
 - [ ] Create view
     - [x] table
+- [x] Create database
+    - [ ] Create models
+        - [ ] File
+        - [ ] Component
     
 
 ### File:

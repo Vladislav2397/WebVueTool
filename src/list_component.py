@@ -1,6 +1,6 @@
-import copy
 from typing import List
 from pathlib import Path
+from os import walk
 
 from caseconverter import kebabcase
 
@@ -19,13 +19,11 @@ class ListComponents:
     def __init__(self, vue_path: Path, style_path: Path = None):
         self._vue_path = vue_path
         self._style_path = style_path
-        self._rel_vue_path = copy.copy(vue_path)
-        self._rel_style_path = copy.copy(style_path)
         self._components = self._get_components()
 
     def _get_components(self) -> list:
-        vue_files = self._get_files(self._vue_path, self._rel_vue_path)
-        style_files = self._get_files(self._style_path, self._rel_style_path)
+        vue_files = self._get_files(self._vue_path)
+        style_files = self._get_files(self._style_path)
         components = []
 
         for vue in vue_files:
@@ -39,18 +37,23 @@ class ListComponents:
             components.append(Component(vue, styles))
         return components
 
-    def _get_files(self, path: Path, rel_path: Path = None) -> List[File]:
+    def _get_files(self, path: Path) -> List[File]:
         """
             :param path: path to directory with files
             :return: all files from path
         """
-        files = list()
-        for item in path.iterdir():
-            if item.is_file():
-                files.append(File(item, relative_root=rel_path))
-            elif item.is_dir():
-                files.extend(self._get_files(path / item))
-        return files
+        list_files = list()
+        exclude = ['__pycache__', '.git', '.idea']
+        for path, dirs, files in walk(path, topdown=True):
+            dirs[:] = [d for d in dirs if d not in exclude]
+            for file in files:
+                list_files.append(files)
+        # for item in path.iterdir():
+        #     if item.is_file():
+        #         files.append(File(item))
+        #     elif item.is_dir():
+        #         files.extend(self._get_files(path / item))
+        return list_files
 
     def add_component(self, name: str):
         pass

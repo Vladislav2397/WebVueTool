@@ -1,7 +1,6 @@
 import re
 from os import makedirs
 from caseconverter import kebabcase, pascalcase
-from pathlib import Path
 from src.config import FileData
 
 
@@ -9,23 +8,17 @@ def get_template_parent_scss(component_name: str) -> str:
     return f"@import \'{component_name}\';\n"
 
 
-def get_file_data(filename: str, name_handler=None) -> FileData:
+def get_file_data(filename: str, path: str = None) -> FileData:
     res = re.match(
-        r'(\w+([-.]\w+)*)(--(critical|main))?\.(scss|vue)$',
+        r'(\w+([-.]\w+)*)(--(critical|main))?\.(scss|css|vue)$',
         filename
     )
-    if name_handler:
-        return FileData(
-            name=name_handler(res.group(1), delimiters='-.'),
-            suffix=res.group(3),
-            extension=res.group(5)
-        )
-    else:
-        return FileData(
-            name=res.group(1),
-            suffix=res.group(3),
-            extension=res.group(5)
-        )
+    return FileData(
+        name=res.group(1),
+        suffix=res.group(3),
+        extension=res.group(5),
+        path=path
+    )
 
 
 def write_file(file_path: str, content: str = '', mode: str = 'w') -> None:
