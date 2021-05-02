@@ -1,20 +1,23 @@
 from pathlib import Path
-from os import listdir, walk
+from os import listdir
 from terminaltables import AsciiTable
+from caseconverter import pascalcase
 
 from src.database.models import (
     create_tables,
-    File as FileDB
+    File as FileDB,
+    Component as ComponentDB
 )
 from src.config import (
     ROOT_PATH, SRC_PATH, SCSS_PATH, COMPONENTS_PATH,
     Paths
 )
-from src.tools import get_file_data
-# from src.list_component import ListComponents
+from src.tools import get_files
 # from src.component import Component
+# from src.list_component import ListComponents
 
 
+# FIXME: Created two component with styles and without
 class Project:
 
     _PATH = Paths(
@@ -26,20 +29,14 @@ class Project:
 
     def __init__(self):
         self._check_project_dir()
-
         create_tables()
+        self._update_db_tables()
 
-        for file in self._get_vue_files():
-            FileDB.get_or_create(
-                name=file.name,
-                suffix=file.suffix,
-                extension=file.extension,
-                path=file.path
-            )
-
-        # self._list_components = ListComponents(
-        #     self._PATH.components, self._PATH.scss
+        # component: ComponentDB = ComponentDB.get(
+        #   ComponentDB.name == 'Tooltip'
         # )
+        # print(component.scss_critical_file.path)
+        # print(component.vue_file.path)
 
     def _check_project_dir(self):
         """
@@ -54,16 +51,44 @@ class Project:
         if list_check:
             raise Exception("It's not a project")
 
-    def _get_vue_files(self):
-        list_files = []
-        for path, dirs, files in walk(self._PATH.components, topdown=True):
-            files[:] = [f for f in files if f.endswith('.vue')]
-            for file in files:
-                list_files.append(get_file_data(file, path))
-        return list_files
+    def _update_db_tables(self):
+        vue_files = get_files(self._PATH.components)
+        scss_files = get_files(self._PATH.scss)
 
-    def _get_db_files(self):
-        return (file for file in FileDB.select())
+        for files in [vue_files, scss_files]:
+            for file in files:
+                file, _ = FileDB.get_or_create(
+                    name=file.name,
+                    suffix=file.suffix,
+                    extension=file.extension,
+                    path=file.path
+                )
+
+                if file.extension == 'vue':
+                    ComponentDB.get_or_create(
+                        name=file.name,
+                        path=file.path,
+                        class_name=None,
+                        vue_file=file,
+                        scss_critical_file=None,
+                        scss_main_file=None,
+                        is_style=False
+                    )
+                elif file.extension == 'scss':
+                    component: ComponentDB = ComponentDB.get_or_none(
+                        name=pascalcase(file.name)
+                    )
+                    if component:
+                        if file.suffix == '--critical':
+                            component.scss_critical_file = file
+                        elif file.suffix == '--main':
+                            component.scss_main_file = file
+                        component.save()
+
+        for component in ComponentDB.select():
+            if component.scss_critical_file and component.scss_main_file:
+                component.is_style = True
+                component.save()
 
     @property
     def root_dirs(self):
@@ -83,15 +108,17 @@ class Project:
 
     def print_table(self):
         table_data = [
-            ['Parent', 'Component', 'IsStyle']
+            ['№', 'Parent', 'Component', 'IsStyle']
         ]
         table = AsciiTable(table_data)
         table.table_data.extend([
             (
-                Path(file.path).relative_to(self._PATH.components),
-                file.name,
-                True
-            ) for file in self._get_db_files()
+                index + 1,
+                Path(component.path).relative_to(self._PATH.components),
+                component.name,
+                component.is_style
+            )
+            for index, component in enumerate(ComponentDB.select())
         ])
         print(table.table)
 

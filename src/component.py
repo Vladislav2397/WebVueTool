@@ -7,12 +7,15 @@ from src.file import File
 
 class Component:
 
-    def __init__(self, vue_file: File, style_files=None):
+    def __init__(
+        self,
+        vue_file: File,
+        critical_style: File,
+        main_style: File
+    ):
         self._vue_file = vue_file
-        self._critical_file = style_files.critical
-        self._main_file = style_files.main
-        print(self._critical_file)
-        print(self._main_file)
+        self._critical_file = critical_style
+        self._main_file = main_style
 
     def __str__(self) -> str:
         return f'{self.__class__.__name__}: {self.name}'

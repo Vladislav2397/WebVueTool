@@ -21,15 +21,15 @@ class File(Model):
 class Component(Model):
     name = CharField()
     path = CharField()
-    class_name = CharField(unique=True)
+    class_name = CharField(null=True)
     vue_file = ForeignKeyField(
         File, verbose_name='Vue file'
     )
     scss_critical_file = ForeignKeyField(
-        File, verbose_name='Scss critical file'
+        File, verbose_name='Scss critical file', null=True
     )
     scss_main_file = ForeignKeyField(
-        File, verbose_name='Scss main file'
+        File, verbose_name='Scss main file', null=True
     )
     is_style = BooleanField()
 

@@ -1,5 +1,6 @@
 import re
-from os import makedirs
+from os import makedirs, walk
+from pathlib import Path
 from caseconverter import kebabcase, pascalcase
 from src.config import FileData
 
@@ -19,6 +20,14 @@ def get_file_data(filename: str, path: str = None) -> FileData:
         extension=res.group(5),
         path=path
     )
+
+
+def get_files(path: Path):
+    list_files = []
+    for path, dirs, files in walk(path, topdown=True):
+        for file in files:
+            list_files.append(get_file_data(file, path))
+    return list_files
 
 
 def write_file(file_path: str, content: str = '', mode: str = 'w') -> None:
