@@ -1,6 +1,5 @@
 from src.file import File
 from pathlib import Path
-from caseconverter import pascalcase, kebabcase
 
 
 class TestFile:
@@ -10,13 +9,13 @@ class TestFile:
 
     def setup(self):
         self.vue_inputs = (
-            'test.vue',
-            'test-test.vue',
-            'test.test.vue',
-            'test.test-test.vue'
+            'Test.vue',
+            'TestTest.vue',
+            'TestTest.vue',
+            'TestTestTest.vue'
         )
         self.vue_files = [
-            File(Path.cwd() / 'sections' / name, case_convert_fn=pascalcase)
+            File(Path.cwd() / 'sections' / name)
             for name in self.vue_inputs
         ]
         self.vue_outputs = [
@@ -33,12 +32,11 @@ class TestFile:
             'test-test.scss',
             'test--critical.scss',
             'test--main.scss',
-            'test-test--main.scss',
-            'test.test--main.scss'
+            'test-test--main.scss'
         )
 
         self.scss_files = [
-            File(Path.cwd() / 'sections' / name, case_convert_fn=kebabcase)
+            File(Path.cwd() / 'sections' / name)
             for name in self.scss_inputs
         ]
 
@@ -47,7 +45,6 @@ class TestFile:
             ('test-test', '', 'scss'),
             ('test', '--critical', 'scss'),
             ('test', '--main', 'scss'),
-            ('test-test', '--main', 'scss'),
             ('test-test', '--main', 'scss')
         ]
 
@@ -94,20 +91,6 @@ class TestFile:
 
         for file, result in self.zip_scss_files_result:
             assert file.parent == Path(Path.cwd()) / 'sections'
-
-    def test_file_property_path(self):
-        for file, result in self.zip_vue_files_result:
-            assert file.path == Path.cwd() / 'sections' / f'{result[0]}.{result[2]}'
-
-        for file, result in self.zip_scss_files_result:
-            assert file.path == Path.cwd() / 'sections' / f'{result[0]}{result[1]}.{result[2]}'
-
-    def test_file_property_content(self):
-        for file, result in self.zip_vue_files_result:
-            assert file.content == ''
-
-        for file, result in self.zip_scss_files_result:
-            assert file.content == ''
 
     def test_file_property_relative(self):
         for file, result in self.zip_vue_files_result:

@@ -7,6 +7,8 @@ SRC_PATH = ROOT_PATH / 'src'
 SCSS_PATH = SRC_PATH / 'assets' / 'scss'
 COMPONENTS_PATH = SRC_PATH / 'components'
 
+DB_NAME = 'web_vue_tool.sqlite'
+
 
 class Paths(NamedTuple):
     root: Path
@@ -24,3 +26,4 @@ class FileData(NamedTuple):
     name: str
     suffix: str
     extension: str
+    path: str

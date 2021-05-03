@@ -36,18 +36,19 @@ class Main:
             name = input('name component: ')
         if name == 'exit' or parent == 'exit':
             return
-        self.project.create_component(parent, name)
-
-    def _print_directories(self):
-        self.project.print_tree()
+        # self.project.create_component(parent, name)
 
     def _print_table(self):
         self.project.print_table()
+
+    def runner(self):
+        self.project.run()
 
     def _exit(self):
         self.is_run = False
 
 
 if __name__ == '__main__':
-    Main()._print_directories()
+    # Main()._print_directories()
     # Main()._print_table()
+    Main().runner()

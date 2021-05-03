@@ -1,3 +1,5 @@
 .editorconfig
+__pycache__
 .pytest_cache
 .idea
+test/workspace/*
