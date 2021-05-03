@@ -31,7 +31,7 @@ class Component(Model):
     scss_main_file = ForeignKeyField(
         File, verbose_name='Scss main file', null=True
     )
-    is_style = BooleanField()
+    is_style = BooleanField(null=True)
 
     class Meta:
         database = DB

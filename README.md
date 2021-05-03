@@ -22,18 +22,5 @@
 |       test        |  Test.vue  |  False |
 +-------------------+------------+--------+
 ````
-или в виде дерева
-````
-Components:
-|-- ui
-    |-- Button.vue
-    |-- Link.vue
-|-- test
-    |-- Test.vue
-|-- advantage
-    |-- about
-        |-- AdvantageAbout.vue
-    |-- Advantage.vue
-````
 
 Создает компонент vue и scss (critical and main) в соответствующих директориях

@@ -14,10 +14,8 @@ from src.config import (
 )
 from src.tools import get_files
 # from src.component import Component
-# from src.list_component import ListComponents
 
 
-# FIXME: Created two component with styles and without
 class Project:
 
     _PATH = Paths(
@@ -64,26 +62,24 @@ class Project:
                     path=file.path
                 )
 
-                if file.extension == 'vue':
-                    ComponentDB.get_or_create(
-                        name=file.name,
-                        path=file.path,
-                        class_name=None,
-                        vue_file=file,
-                        scss_critical_file=None,
-                        scss_main_file=None,
-                        is_style=False
-                    )
-                elif file.extension == 'scss':
-                    component: ComponentDB = ComponentDB.get_or_none(
-                        name=pascalcase(file.name)
-                    )
-                    if component:
-                        if file.suffix == '--critical':
-                            component.scss_critical_file = file
-                        elif file.suffix == '--main':
-                            component.scss_main_file = file
-                        component.save()
+        for file in FileDB.select().where(FileDB.extension == 'vue'):
+            ComponentDB.get_or_create(
+                name=file.name,
+                path=file.path,
+                vue_file=file
+            )
+
+        for file in FileDB.select().where(FileDB.extension == 'scss'):
+            component: ComponentDB = ComponentDB.get_or_none(
+                name=pascalcase(file.name)
+            )
+            if component:
+                if file.suffix == '--critical':
+                    component.scss_critical_file = file
+                elif file.suffix == '--main':
+                    component.scss_main_file = file
+
+                component.save()
 
         for component in ComponentDB.select():
             if component.scss_critical_file and component.scss_main_file:
