@@ -30,12 +30,6 @@ class Project:
         create_tables()
         self._update_db_tables()
 
-        # component: ComponentDB = ComponentDB.get(
-        #   ComponentDB.name == 'Tooltip'
-        # )
-        # print(component.scss_critical_file.path)
-        # print(component.vue_file.path)
-
     def _check_project_dir(self):
         """
             Check current dir
