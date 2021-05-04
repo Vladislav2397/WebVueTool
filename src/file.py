@@ -2,6 +2,7 @@ import re
 from pathlib import Path
 from typing import Union
 from src.config import FileData
+from src.database.models import File as FileDB
 
 
 class File:
@@ -13,8 +14,8 @@ class File:
             relative_root: Path = None
     ):
         """
-        :param path: Full path to file (/home/user/about.vue)
-        :param relative_root: Full path to relative path (/home/user)
+        :param path: Full path to file (/home/user/project/about.vue)
+        :param relative_root: Full path to relative path (/home/user/project)
         """
         self._path = Path(path)
         self._file_name = self._path.name
@@ -39,16 +40,21 @@ class File:
             name=res.group(1),
             suffix=res.group(3),
             extension=res.group(5),
-            path=self._path.parent
+            path=str(self._path.parent)
         )
 
-    def save(self) -> None:
+    def save_db(self) -> None:
         """ Save this file in database """
-        pass
+        FileDB.get_or_create(
+            name=self._name,
+            suffix=self._suffix,
+            extension=self._extension,
+            path=self.parent
+        )
 
-    def remove(self) -> None:
+    def _remove_db(self, file_id: int) -> None:
         """ Remove this file from database """
-        pass
+        FileDB.delete_by_id(file_id)
 
     @property
     def name(self) -> str:
@@ -84,13 +90,6 @@ class File:
         :return: full file name
         """
         return self._file_name
-
-    @property
-    def parts(self) -> tuple:
-        """
-        :return: parts to relative path
-        """
-        return self.relative_path.parts
 
     @property
     def relative_path(self):
