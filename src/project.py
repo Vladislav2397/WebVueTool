@@ -76,9 +76,10 @@ class Project:
                 component.save()
 
         for component in ComponentDB.select():
-            if component.scss_critical_file and component.scss_main_file:
-                component.is_style = True
-                component.save()
+            component.is_style = all([
+                component.scss_critical_file, component.scss_main_file
+            ])
+            component.save()
 
     @property
     def root_dirs(self):

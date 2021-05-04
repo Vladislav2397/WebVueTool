@@ -9,6 +9,7 @@ def get_template_parent_scss(component_name: str) -> str:
     return f"@import \'{component_name}\';\n"
 
 
+# TODO: remove
 def get_file_data(filename: str, path: str = None) -> FileData:
     res = re.match(
         r'(\w+([-.]\w+)*)(--(critical|main))?\.(scss|css|vue)$',
@@ -22,6 +23,7 @@ def get_file_data(filename: str, path: str = None) -> FileData:
     )
 
 
+# TODO: Simplify abstraction
 def get_files(path: Path):
     list_files = []
     for path, dirs, files in walk(path, topdown=True):

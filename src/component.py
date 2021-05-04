@@ -20,6 +20,10 @@ class Component:
     def __str__(self) -> str:
         return f'{self.__class__.__name__}: {self.name}'
 
+    def save(self) -> None:
+        """ Save this file in database """
+        pass
+
     def remove(self, name: str):
         pass
 
